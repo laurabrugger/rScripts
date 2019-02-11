@@ -1,8 +1,8 @@
 # rScripts
-*Repository Contents* 
+**Repository Contents**
 Contains the following sample `R` scripts: 
 
-* Odds Ratio- using `stargazer` to create odds ratios from binary logisitc regression. 
+* oddsRatios.Rmd- uses `stargazer` to format a table that includes odds ratios and binary logisitc regression results. 
 
 This repository also contains: 
 
