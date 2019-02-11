@@ -1,0 +1,68 @@
+---
+title: "Stargazer for Odds Ratios"
+author: Laura Brugger
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Dependencies and Data
+***
+
+```{r}
+library(ggplot2) #mpg data
+library(datasets) #data
+library(stargazer) #tables
+data("mtcars")
+```
+
+## Clean Data
+***
+```{r}
+#create binary dummy variable for logistic regression called `mpg2` where 1= greater than or equal to the median mpg of 19.20
+mtcars$mpg2 <- ifelse(mtcars$mpg >=19.20, 1, 0)
+```
+
+## Logistic Regression
+***
+```{r}
+#create two logistic regression models, the first of which uses only `cyl` as a key independent variable and assign to an object called `m1`. Include `hp` and `gear` in model two and assign to an object called `m2`. 
+#print a summary of each model
+m1 <- glm(mpg2 ~ cyl, data=mtcars, family="binomial")
+m2 <- glm(mpg2 ~ cyl + hp + gear, data=mtcars, family="binomial")
+summary(m1)
+summary (m2)
+```
+```{r}
+#use `exp` to exponentiate the coefficients and view odds ratios
+exp(coef(m1))
+exp(coef(m2))
+```
+
+## Use Stargazer to Produce Tables
+***
+
+```{r}
+#exponentiate model 1 for the table
+m1Exp= m1
+m1Exp$coefficients= exp(m1$coefficients)
+m2Exp= m2
+m2Exp$coefficients= exp(m2$coefficients)
+```
+
+
+```{r}
+#Use stargazer to produce a table that includes both coefficients AND Odds Ratios
+#`star.cutoffs` provides the correct stars for p-values (default is higher than standard)
+#p=list assigns model p-values to odds ratios (omit to view discrepancy in p-values)
+#type="text" produces plain text table. Omit to produce `LaTex` table. 
+
+stargazer(m1, m1Exp, m2, m2Exp, title = "Regression and Odds Ratios", dep.var.labels = c("Miles Per Gallon"), covariate.labels = c("Cylinders", "Horsepower", "Gears"), column.labels = c("Model 1 Coefs", "Model 1 Odds Ratios", "Model 2 Coefs", "Model 2 Odds Ratios"), single.row = TRUE, star.cutoffs = c(0.05, 0.01, 0.001), p=list(coef(summary(m1))[,4], coef(summary(m1))[,4], coef(summary(m2))[,4], coef(summary(m2))[,4]), type = "text")
+```
+
+
+
+
+
